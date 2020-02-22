@@ -1,0 +1,12 @@
+# Project
+
+.idea/
+
+# Library
+
+node_modules/
+
+# Public
+
+public/asset
+!public/asset/.gitignore
