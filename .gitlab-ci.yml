@@ -1,0 +1,38 @@
+variables:
+  IMAGE_TEST_TAG: $CI_REGISTRY/$CI_PROJECT_NAMESPACE/$CI_PROJECT_NAME:dev-$CI_COMMIT_SHORT_SHA
+  IMAGE_RELEASE_TAG: $CI_REGISTRY/$CI_PROJECT_NAMESPACE/$CI_PROJECT_NAME:$CI_COMMIT_REF_NAME
+  IMAGE_RELEASE_TAG_LATEST: $CI_REGISTRY/$CI_PROJECT_NAMESPACE/$CI_PROJECT_NAME:latest
+
+before_script:
+  - docker login -u $REGISTRY_USER -p $REGISTRY_PASSWORD $CI_REGISTRY
+
+build_image:
+  image: alpine:latest
+  stage: build
+  except:
+    - tags
+  only:
+    - master
+  tags:
+    - general
+  script:
+    - docker build --pull -t $IMAGE_TEST_TAG .
+    - docker push $IMAGE_TEST_TAG
+
+build_and_push_image:
+  image: alpine:latest
+  stage: build
+  only:
+    - tags
+  tags:
+    - general
+  script:
+    - docker build --pull -t $IMAGE_RELEASE_TAG .
+    - docker push $IMAGE_RELEASE_TAG
+    - docker build --pull -t $IMAGE_RELEASE_TAG_LATEST .
+    - docker push $IMAGE_RELEASE_TAG_LATEST
+
+    # ToDo: The double building in build_and_push_image is only temporary to link to latest.
+    #       Some more research has to be done here to see how latest really should be handled. Possible scenarios:
+    #       A: Latest always shows to the last release with a tag
+    #       B: Latest always shows to the latest commit in the master branch
