@@ -36,3 +36,4 @@ build_and_push_image:
     #       Some more research has to be done here to see how latest really should be handled. Possible scenarios:
     #       A: Latest always shows to the last release with a tag
     #       B: Latest always shows to the latest commit in the master branch
+
